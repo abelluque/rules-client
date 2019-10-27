@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    
+    <bean id="ruleResult" class="com.ablehealth.rules.client.processors.RulesResultProcessor" scope="prototype"/>
+    	
     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
         <!--
             A route that creates periodically random Persons and send them to the kie server.
@@ -13,7 +17,7 @@
             <bean id="route-new-command" method="createRandomCommand" ref="decisionServerHelper"/>
             <to id="to-rabbit-client" uri="direct:rabbit-pull-message"/>
             <to id="route-to-decision-server-rest" uri="direct:decisionserver"/>
-<!--             <bean id="route-extract-result" method="extractResult" ref="decisionServerHelper"/> -->
+            <!--             <bean id="route-extract-result" method="extractResult" ref="decisionServerHelper"/> -->
             <!--             <log id="route-log-result" message="${body.salutation}"/> -->
         </route>
         <!--
@@ -36,21 +40,20 @@
                 <xstream/>
             </marshal>
             <to id="to-http-rest" uri="http://{{service:{{kieserver.service}}:{{kieserver.devel-service}}}}/{{kieserver.path}}?authMethod=Basic&amp;authUsername={{kieserver.username}}&amp;authPassword={{kieserver.password}}"/>
+            <process id="rulesResult" ref="ruleResult"/> 
             <!-- Unmarshal the response -->
-<!--                         <unmarshal id="route-unmarshal"> -->
-<!--                             <xstream/> -->
-<!--                         </unmarshal> -->
+            <!--                         <unmarshal id="route-unmarshal"> -->
+            <!--                             <xstream/> -->
+            <!--                         </unmarshal> -->
         </route>
-        
         <route id="rabbitmq-pull-route">
-        	<from id="route-from-timer" uri="direct:rabbit-pull-message"/>
-            <to id="rabbit-pull-messages" uri="rabbitmq:guest:guest@localhost:5672/ahealth/inboundMessagesQueue"/>
-            <log  message="${body}"/>
+            <from id="route-from-timer" uri="direct:rabbit-pull-message"/>
+            <to id="rabbit-in-messages" uri="rabbitmq:{{rabbit.user}}:{{rabbit.password}}@{{rabbit.host}}:{{rabbit.port}}/{{rabbit.vhost}}/{{rabbit.queue}}"/>
+            <log id="_log1" message="${body}"/>
         </route>
-        
         <route id="rabbitmq-to-route">
-            <from id="rabbit-in-messages" uri="rabbitmq:guest:guest@localhost:5672/ahealth/inboundMessagesQueue"/>
-            <log  message="${body}"/>
+            <from id="rabbit-in-messages" uri="rabbitmq:{{rabbit.user}}:{{rabbit.password}}@{{rabbit.host}}:{{rabbit.port}}/{{rabbit.vhost}}/{{rabbit.queue}}"/>
+            <log id="_log2" message="${body}"/>
         </route>
     </camelContext>
 </beans>
