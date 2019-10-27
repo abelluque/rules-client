@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.ablehealth</groupId>
+	<artifactId>rules-client</artifactId>
+	<version>1.0.0</version>
+
+	<name>Able Health :: Spring Boot :: Camel and Drools</name>
+	<description>Rules Client - Camel route using a rules engine</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- configure the Fuse version you want to use here -->
+		<fuse.version>7.2.0.fuse-720020-redhat-00001</fuse.version>
+
+		<!-- maven plugin versions -->
+		<maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
+		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.jboss.bom.rhdm</groupId>
+				<artifactId>rhdm-bom</artifactId>
+				<version>7.0.1.GA-redhat-2</version>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.drools</groupId>
+			<artifactId>drools-compiler</artifactId>
+			<version>7.24.0.t043</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<version>1.5.16.RELEASE</version>
+		</dependency>
+		<!-- Enabling health checks -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+			<version>1.5.16.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<version>1.5.16.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
+			<version>1.5.16.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-spring-boot-starter</artifactId>
+			<version>2.21.0.fuse-720050-redhat-00001</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-http-starter</artifactId>
+			<version>2.21.0.fuse-720050-redhat-00001</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-xstream-starter</artifactId>
+			<version>2.21.0.fuse-720050-redhat-00001</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-rabbitmq-starter</artifactId>
+			<version>2.21.0.fuse-720050-redhat-00001</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.kie</groupId>
+			<artifactId>kie-server-client</artifactId>
+			<version>6.2.0.Final</version>
+		</dependency>
+
+		<!-- For decision server auto-configuration -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<version>1.5.16.RELEASE</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>com.ablehealth</groupId>
+			<artifactId>rules-model</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+				<inherited>true</inherited>
+				<configuration>
+					<excludes>
+						<exclude>**/*KT.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jboss.redhat-fuse</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${fuse.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
